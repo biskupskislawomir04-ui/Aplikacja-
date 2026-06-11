@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JP·KR 2026">
+<meta name="theme-color" content="#f7f4ef">
+<title>JP·KR 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4ef;
+  --bg2: #ffffff;
+  --bg3: #f0ece4;
+  --bg4: #e8e2d8;
+  --jp: #c8392b;
+  --kr: #1a4d9e;
+  --gold: #c9882a;
+  --green: #2a7d4f;
+  --purple: #6b4fa0;
+  --text: #1a1814;
+  --text2: #5a5650;
+  --text3: #9a958e;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow2: 0 4px 20px rgba(0,0,0,0.10);
+  --r: 16px;
+  --r2: 12px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+/* TRYB CIEMNY */
+body.dark-theme {
+  --bg: #121212;
+  --bg2: #1e1e1e;
+  --bg3: #2c2c2c;
+  --bg4: #383838;
+  --text: #f0f0f0;
+  --text2: #cccccc;
+  --text3: #999999;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+body { display: flex; flex-direction: column; }
+
+/* TOP BAR */
+.topbar {
+  padding: calc(var(--safe-top) + 10px) 18px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.topbar-brand { display: flex; align-items: center; gap: 8px; }
+.topbar-flags { font-size: 20px; letter-spacing: -2px; }
+.topbar-info { }
+.topbar-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.topbar-date { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.topbar-prog { display: flex; align-items: center; gap: 6px; }
+.prog-ring { position: relative; width: 36px; height: 36px; }
+.prog-ring svg { transform: rotate(-90deg); }
+.prog-ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--jp); }
+
+/* MAIN */
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.main::-webkit-scrollbar { display: none; }
+.page { display: none; padding-bottom: calc(72px + var(--safe-bottom)); animation: fadeUp .2s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* BOTTOM NAV */
+.bottomnav {
+  flex-shrink: 0; display: flex; align-items: stretch;
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+.bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 8px 2px; cursor: pointer; border: none; background: none; color: var(--text3); transition: color .15s; position: relative; }
+.bnav-item.active { color: var(--jp); }
+.bnav-item.active .bnav-icon { transform: scale(1.1); }
+.bnav-icon { font-size: 22px; line-height: 1; transition: transform .2s; }
+.bnav-label { font-size: 9px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase; }
+.bnav-dot { position: absolute; top: 6px; right: calc(50% - 14px); width: 6px; height: 6px; background: var(--jp); border-radius: 50%; display: none; }
+.bnav-dot.show { display: block; }
+
+/* DRAWER */
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+.drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-radius: 24px 24px 0 0; z-index: 101; padding: 0 0 calc(20px + var(--safe-bottom)); transform: translateY(100%); transition: transform .3s cubic-bezier(.25,.46,.45,.94); }
+.drawer.open { transform: translateY(0); }
+.drawer-handle { width: 40px; height: 4px; background: var(--bg4); border-radius: 2px; margin: 12px auto 16px; }
+.drawer-title { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); padding: 0 20px 12px; }
+.drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+.drawer-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r2); padding: 14px 12px; text-align: center; cursor: pointer; transition: all .15s; }
+.drawer-btn:active { transform: scale(0.97); background: var(--bg4); }
+.drawer-btn-icon { font-size: 28px; margin-bottom: 6px; }
+.drawer-btn-label { font-size: 12px; font-weight: 600; color: var(--text); }
+.drawer-btn-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* HERO */
+.hero { padding: 20px 18px 14px; background: var(--bg2); margin-bottom: 8px; }
+.hero-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.hero-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); line-height: 1.15; }
+.hero-title span { color: var(--jp); }
+.hero-sub { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+
+/* SECTION LABEL */
+.slabel { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--text3); padding: 18px 18px 8px; display: flex; align-items: center; gap: 8px; }
+.slabel::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* CARD */
+.card { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.card-head { padding: 14px 16px 0; display: flex; align-items: center; gap: 10px; }
+.card-ico { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.ico-red { background: rgba(200,57,43,0.1); }
+.ico-blue { background: rgba(26,77,158,0.1); }
+.ico-gold { background: rgba(201,136,42,0.1); }
+.ico-green { background: rgba(42,125,79,0.1); }
+.ico-purple { background: rgba(107,79,160,0.1); }
+.card-title { font-size: 14px; font-weight: 700; }
+.card-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.card-body { padding: 12px 16px 14px; }
+
+/* ROWS */
+.row-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.row-item:last-child { border-bottom: none; }
+.row-bullet { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.rb-red { background: rgba(200,57,43,0.1); color: var(--jp); }
+.rb-green { background: rgba(42,125,79,0.1); color: var(--green); }
+.rb-blue { background: rgba(26,77,158,0.1); color: var(--kr); }
+.rb-gold { background: rgba(201,136,42,0.1); color: var(--gold); }
+.row-text { font-size: 13px; color: var(--text2); line-height: 1.6; flex: 1; }
+.row-text strong { color: var(--text); font-weight: 600; }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: .3px; margin-right: 3px; }
+.b-red { background: rgba(200,57,43,0.12); color: var(--jp); }
+.b-blue { background: rgba(26,77,158,0.12); color: var(--kr); }
+.b-gold { background: rgba(201,136,42,0.12); color: var(--gold); }
+.b-green { background: rgba(42,125,79,0.12); color: var(--green); }
+.b-gray { background: var(--bg3); color: var(--text3); }
+
+/* TIMELINE */
+.tl-wrap { padding: 0 14px; }
+.tl-item { display: flex; gap: 12px; padding-bottom: 16px; }
+.tl-aside { display: flex; flex-direction: column; align-items: center; width: 40px; flex-shrink: 0; }
+.tl-bubble { width: 40px; height: 40px; border-radius: 50%; background: var(--bg2); border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: var(--shadow); }
+.tl-bubble.jp { border-color: rgba(200,57,43,0.3); background: rgba(200,57,43,0.05); }
+.tl-bubble.kr { border-color: rgba(26,77,158,0.3); background: rgba(26,77,158,0.05); }
+.tl-line { flex: 1; width: 2px; background: var(--border); margin: 4px 0; border-radius: 1px; }
+.tl-item:last-child .tl-line { display: none; }
+.tl-body { flex: 1; padding-top: 7px; }
+.tl-date { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
+.tl-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.tl-desc { font-size: 12px; color: var(--text2); line-height: 1.7; }
+.tl-desc a { color: var(--kr); text-decoration: none; font-weight: 600; }
+.tl-card { background: var(--bg3); border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+.tl-card strong { color: var(--text); display: block; margin-bottom: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text3); }
+
+/* ALERT BOXES */
+.alert { margin: 0 14px 10px; border-radius: var(--r2); padding: 12px 14px; font-size: 12px; line-height: 1.7; }
+.alert strong { font-weight: 700; display: block; margin-bottom: 2px; font-size: 13px; }
+.alert-warn { background: rgba(201,136,42,0.1); border-left: 3px solid var(--gold); color: #7a5010; }
+.alert-warn strong { color: var(--gold); }
+.alert-info { background: rgba(26,77,158,0.07); border-left: 3px solid var(--kr); color: #2a3d6a; }
+.alert-info strong { color: var(--kr); }
+.alert-danger { background: rgba(200,57,43,0.08); border-left: 3px solid var(--jp); color: #7a2018; }
+.alert-danger strong { color: var(--jp); }
+.alert-ok { background: rgba(42,125,79,0.08); border-left: 3px solid var(--green); color: #1a5030; }
+.alert-ok strong { color: var(--green); }
+
+/* CHECKIN */
+.checkin-hero { margin: 0 14px 12px; background: linear-gradient(135deg, var(--jp) 0%, #e85d4a 100%); border-radius: var(--r); padding: 16px; color: white; box-shadow: 0 4px 20px rgba(200,57,43,0.25); }
+.ch-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: .8; margin-bottom: 6px; text-transform: uppercase; }
+.ch-count { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1; }
+.ch-total { font-size: 13px; opacity: .7; margin-top: 2px; }
+.ch-bar-wrap { margin-top: 12px; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+.ch-bar { height: 6px; background: white; border-radius: 3px; transition: width .4s; }
+.place-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 14px 8px; }
+.place-card { background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--r2); padding: 13px; cursor: pointer; transition: all .2s; position: relative; box-shadow: var(--shadow); }
+.place-card:active { transform: scale(0.96); }
+.place-card.visited { border-color: rgba(42,125,79,0.4); background: rgba(42,125,79,0.04); }
+.place-card.visited::after { content: '✓'; position: absolute; top: 10px; right: 12px; font-size: 14px; color: var(--green); font-weight: 800; }
+.p-emoji { font-size: 26px; margin-bottom: 7px; }
+.p-name { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.p-city { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.p-maps { display: inline-flex; align-items: center; gap: 3px; margin-top: 7px; font-size: 10px; color: var(--kr); font-weight: 600; text-decoration: none; }
+.p-maps:active { opacity: .7; }
+.p-done { font-size: 10px; color: var(--green); margin-top: 4px; font-weight: 600; display: none; }
+.place-card.visited .p-done { display: block; }
+.p-tip { display: none; font-size: 10px; color: var(--text3); margin-top: 5px; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 5px; }
+.place-card.visited .p-tip { display: block; }
+
+/* MONEY / BUDGET */
+.budget-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 14px 10px; }
+.budget-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); padding: 14px; box-shadow: var(--shadow); }
+.bc-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.bc-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+.bc-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.money-table { }
+.money-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.money-row:last-child { border-bottom: none; }
+.ml { font-size: 13px; color: var(--text2); }
+.mv { font-size: 13px; font-weight: 700; color: var(--text); }
+
+/* CONVERTER */
+.converter { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.conv-head { padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+.conv-title { font-size: 14px; font-weight: 700; }
+.conv-note { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.conv-body { padding: 0 16px 16px; }
+.conv-input-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.conv-cur { font-size: 12px; font-weight: 700; color: var(--text3); width: 32px; flex-shrink: 0; }
+.conv-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 18px; font-weight: 700; color: var(--text); font-family: 'DM Sans', sans-serif; width: 100%; }
+.conv-input:focus { outline: none; border-color: var(--kr); }
+.conv-result { background: var(--bg3); border-radius: 12px; padding: 12px 14px; }
+.conv-res-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.conv-res-row:last-child { border-bottom: none; }
+.conv-res-label { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.conv-res-val { font-size: 16px; font-weight: 700; color: var(--text); }
+.conv-tip { font-size: 10px; color: var(--text3); margin-top: 8px; text-align: center; }
+
+/* SPLIT BILL */
+.split { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.split-head { padding: 14px 16px 10px; }
+.split-body { padding: 0 16px 16px; }
+.split-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.split-label { font-size: 12px; font-weight: 600; color: var(--text2); width: 80px; flex-shrink: 0; }
+.split-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 16px; font-weight: 700; color: var(--text); font-family: 'DM Sans', sans-serif; }
+.split-input:focus { outline: none; border-color: var(--kr); }
+.split-sel { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 14px; color: var(--text); font-family: 'DM Sans', sans-serif; appearance: none; }
+.split-sel:focus { outline: none; }
+.split-result { background: linear-gradient(135deg, var(--jp) 0%, #e85d4a 100%); border-radius: 12px; padding: 14px 16px; color: white; }
+.sr-label { font-size: 11px; opacity: .8; margin-bottom: 4px; font-weight: 600; letter-spacing: .5px; }
+.sr-main { font-family: 'DM Serif Display', serif; font-size: 30px; }
+.sr-sub { font-size: 11px; opacity: .75; margin-top: 4px; }
+.split-btn { width: 100%; background: var(--text); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 10px; transition: opacity .15s; }
+.split-btn:active { opacity: .8; }
+
+/* PHRASE */
+.phrase-card { margin: 0 14px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; box-shadow: var(--shadow); }
+.phrase-inner { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.phrase-text { flex: 1; }
+.phrase-orig { font-size: 20px; color: var(--jp); font-weight: 700; margin-bottom: 2px; }
+.phrase-orig.kr { color: var(--kr); }
+.phrase-rom { font-size: 12px; color: var(--text3); margin-bottom: 3px; }
+.phrase-pl { font-size: 13px; font-weight: 600; color: var(--text); }
+.phrase-tts { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); border: none; font-size: 18px; cursor: pointer; flex-shrink: 0; transition: all .15s; }
+.phrase-tts:active { transform: scale(.9); background: var(--bg4); }
+.phrase-context { font-size: 10px; color: var(--text3); padding: 6px 14px 10px; border-top: 1px solid var(--border); background: var(--bg3); }
+
+/* EMERGENCY */
+.emerg-card { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.emerg-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--border); }
+.emerg-row:last-child { border-bottom: none; }
+.emerg-left { display: flex; align-items: center; gap: 12px; }
+.emerg-ico { font-size: 22px; }
+.emerg-label { font-size: 13px; font-weight: 600; }
+.emerg-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.emerg-call { display: inline-flex; align-items: center; gap: 6px; background: var(--jp); color: white; border-radius: 20px; padding: 6px 14px; font-size: 14px; font-weight: 700; text-decoration: none; transition: opacity .15s; }
+.emerg-call:active { opacity: .8; }
+.emerg-call.blue { background: var(--kr); }
+
+/* APPS */
+.app-card { margin: 0 14px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; box-shadow: var(--shadow); }
+.app-ico { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; background: var(--bg3); }
+.app-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.app-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.app-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.app-tag { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+.tag-jp { background: rgba(200,57,43,0.1); color: var(--jp); }
+.tag-kr { background: rgba(26,77,158,0.1); color: var(--kr); }
+.tag-must { background: rgba(42,125,79,0.1); color: var(--green); }
+.tag-free { background: var(--bg3); color: var(--text3); }
+
+/* CHECKLIST */
+.checklist-card { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.cl-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+.cl-item:last-child { border-bottom: none; }
+.cl-box { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--border2); flex-shrink: 0; margin-top: 0px; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.cl-item.done .cl-box { background: var(--green); border-color: var(--green); }
+.cl-item.done .cl-box::after { content: '✓'; font-size: 13px; color: white; font-weight: 800; }
+.cl-item.done .cl-text { text-decoration: line-through; color: var(--text3); }
+.cl-text { font-size: 13px; color: var(--text2); line-height: 1.6; flex: 1; }
+.cl-text strong { color: var(--text); font-weight: 600; }
+.cl-urgent { font-size: 9px; font-weight: 700; padding: 1px 6px; background: rgba(200,57,43,0.1); color: var(--jp); border-radius: 8px; margin-left: 6px; vertical-align: middle; }
+
+/* RESTAURANT */
+.resto { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); box-shadow: var(--shadow); overflow: hidden; }
+.resto-top { padding: 13px 14px 0; }
+.resto-name-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.resto-name { font-size: 14px; font-weight: 700; }
+.resto-price { font-size: 13px; font-weight: 700; color: var(--gold); }
+.resto-stars { color: #e0a020; font-size: 11px; margin: 4px 0; }
+.resto-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.resto-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px 10px; margin-top: 8px; border-top: 1px solid var(--border); background: var(--bg3); }
+.resto-city { font-size: 10px; color: var(--text3); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+.resto-maps { font-size: 10px; color: var(--kr); font-weight: 700; text-decoration: none; }
+.resto-maps:active { opacity: .7; }
+
+/* QUICK START */
+.qs-card { margin: 0 14px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.qs-head { background: linear-gradient(135deg, var(--kr) 0%, #2a6bc9 100%); padding: 16px; color: white; }
+.qs-head-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 4px; }
+.qs-head-sub { font-size: 12px; opacity: .8; }
+.qs-steps { padding: 4px 0; }
+.qs-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.qs-step:last-child { border-bottom: none; }
+.qs-num { width: 24px; height: 24px; border-radius: 50%; background: var(--kr); color: white; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.qs-text { flex: 1; font-size: 13px; color: var(--text2); line-height: 1.6; }
+.qs-text strong { color: var(--text); font-weight: 700; }
+.qs-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 11px; color: var(--kr); font-weight: 700; text-decoration: none; background: rgba(26,77,158,0.08); padding: 3px 8px; border-radius: 20px; }
+
+/* MISC */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
+.chip { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all .15s; }
+.chip.active { background: var(--jp); color: white; border-color: var(--jp); }
+.h-div { height: 1px; background: var(--border); margin: 4px 14px; }
+.spacer { height: 10px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-flags">🇯🇵🇰🇷</div>
+    <div class="topbar-info">
+      <div class="topbar-title">JP · KR 2026</div>
+      <div class="topbar-date">25 maja – 4 czerwca · 6 osób</div>
+    </div>
+  </div>
+<button id="theme-toggle" onclick="toggleTheme()" style="background:none;border:none;font-size:20px;cursor:pointer;padding:0 12px;margin-right:4px;">🌙</button>
+  <div class="topbar-prog">
+    <div class="prog-ring">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="#e8e2d8" stroke-width="3"/>
+        <circle id="prog-circle" cx="18" cy="18" r="15" fill="none" stroke="#c8392b" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="94.2" stroke-linecap="round"/>
+      </svg>
+      <div class="prog-ring-text" id="prog-pct">0%</div>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="main">
+
+<!-- ==================== PAGE: PLAN ==================== -->
+<div class="page active" id="page-plan">
+  <div class="hero">
+    <div class="hero-eyebrow">🗓 Itinerary</div>
+    <div class="hero-title">Plan <span>podróży</span></div>
+    <div class="hero-sub">Tokio · Hakone · Kyoto · Osaka · Nara · Seul — 11 dni</div>
+  </div>
+
+  <div class="slabel">Japonia 🇯🇵 — Tokio</div>
+  <div class="tl-wrap">
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">✈️</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">25 Maja · Niedziela</div>
+        <div class="tl-title">Przylot + pierwsze kroki</div>
+        <div class="tl-desc">
+          <span class="badge b-blue">Narita</span> N'EX do Shinjuku ~55 min · <span class="badge b-blue">Haneda</span> Keikyu ~30 min<br><br>
+          <strong>Na lotnisku — w tej kolejności:</strong><br>
+          1. Aktywuj eSIM jeszcze w samolocie<br>
+          2. Przejdź odprawę z QR Visit Japan Web<br>
+          3. Kup/aktywuj Suica (automat JR lub Apple/Google Wallet)<br>
+          4. Doładuj 5000 ¥ na start
+          <div class="tl-card"><strong>🌆 Wieczór</strong>Asakusa: Senso-ji o zmierzchu, spacer Nakamise-dori. Kolacja na Hoppy Street — izakaya z yakitori ok. 1500 ¥/os.</div>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">🗼</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">26 Maja · Poniedziałek</div>
+        <div class="tl-title">Tokio — pełny dzień</div>
+        <div class="tl-desc">
+          <span class="badge b-gold">7:30</span> Meiji Jingu — wejście darmowe, spokojny spacer lasem<br>
+          <span class="badge b-gold">10:00</span> Harajuku Takeshita-dori — kawiarnie, street fashion<br>
+          <span class="badge b-red">13:00</span> Lunch: ramen Afuri w Harajuku (~1200 ¥)<br>
+          <span class="badge b-gold">15:00</span> Shibuya: skrzyżowanie + Shibuya Sky 🌆 (~2000 ¥, <strong>rezerwuj online!</strong>)<br>
+          <span class="badge b-blue">19:00</span> Shinjuku Golden Gai — małe bary po 500 ¥/drink. Uwaga: max 4–6 os/bar!
+          <div class="tl-card"><strong>💡 Tip dla seniorów</strong>Meiji i Shibuya — dużo siedzenia. Golden Gai: seniorzy mogą wrócić wcześniej, młodsi bawią się do późna.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slabel">Hakone + Fuji 🗻</div>
+  <div class="tl-wrap">
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">🚠</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">27 Maja · Wtorek</div>
+        <div class="tl-title">Hakone — widok na Fuji</div>
+        <div class="tl-desc">
+          <span class="badge b-gold">7:00</span> Shinkansen Tokio → Odawara (~35 min, 1420 ¥)<br>
+          <span class="badge b-red">Kup</span> Hakone Free Pass w kasie Odakyu (~6100 ¥) — wliczone: kolej zębata, ropeway, rejs, autobusy<br>
+          <span class="badge b-gold">9:30</span> Owakudani przez ropeway — czarne jajka, widok Fuji (przy dobrej pogodzie)<br>
+          <span class="badge b-gold">12:00</span> Lunch przy jeziorze Ashi<br>
+          <span class="badge b-gold">13:00</span> Rejs po jeziorze Ashi — wliczony w Free Pass<br>
+          <span class="badge b-red">15:30</span> <strong>Jedź PROSTO do Kyoto!</strong> Shinkansen z Odawary (~13 600 ¥). Nie wracaj do Tokio!
+          <div class="tl-card"><strong>⛽ Ważne</strong>Sprawdź pogodę wieczór wcześniej (app: tenki.jp). Fuji widoczny głównie rano. Owakudani może być zamknięte przy aktywności wulkanicznej.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slabel">Kyoto · Osaka · Nara 🦌</div>
+  <div class="tl-wrap">
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">⛩️</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">28 Maja · Czwartek</div>
+        <div class="tl-title">Kyoto — wschodnia strona</div>
+        <div class="tl-desc">
+          <span class="badge b-red">7:30</span> Fushimi Inari — koniecznie przed 8:00! Bez tłumów, fotogeniczne<br>
+          <span class="badge b-gold">10:30</span> Kiyomizudera (600 ¥) + Ninenzaka / Sannenzaka — historyczne uliczki<br>
+          <span class="badge b-gold">13:00</span> Lunch: Nishiki Market — "kuchnia Kyoto", street food ok. 1000 ¥<br>
+          <span class="badge b-blue">15:00</span> Ginkaku-ji "Srebrny Pawilon" (500 ¥) + ścieżka filozofa<br>
+          <span class="badge b-blue">Wieczór</span> Spacer Gion — szansa na spotkanie maiko
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">🎋</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">29 Maja · Piątek</div>
+        <div class="tl-title">Kyoto — Arashiyama</div>
+        <div class="tl-desc">
+          <span class="badge b-red">6:30</span> Las bambusowy — <strong>MUSI być przed 7:30!</strong> Potem tłumy nie do przejścia<br>
+          <span class="badge b-gold">8:30</span> Tenryu-ji (500 ¥) — ogród zen z widokiem na bambusowy las<br>
+          <span class="badge b-gold">10:30</span> Iwatayama Monkey Park — 550 ¥, seniorzy: spokojny marsz 20 min w górę<br>
+          <span class="badge b-blue">13:00</span> Lunch: tofu kaiseki w okolicy (~2000 ¥)<br>
+          <span class="badge b-blue">Wieczór</span> Gion ponownie — kolacja w tradycyjnej restauracji
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">🦌</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">30 Maja · Sobota</div>
+        <div class="tl-title">Nara — jelenie i Budda</div>
+        <div class="tl-desc">
+          <span class="badge b-gold">8:30</span> Kintetsu z Kyoto → Nara (~45 min, 720 ¥) lub JR Nara Line<br>
+          <span class="badge b-gold">9:30</span> Nara Park — jelenie dosłownie chodzą ulicami, karmienie "shika senbei" 200 ¥<br>
+          <span class="badge b-gold">10:30</span> Todai-ji — Wielki Budda z brązu, największy drewniany budynek świata (600 ¥)<br>
+          <span class="badge b-blue">12:30</span> Lunch: kakinoha-zushi — lokalna specjalność (~1200 ¥)<br>
+          <span class="badge b-blue">14:00</span> Kasuga Taisha — setki kamiennych latarni<br>
+          <span class="badge b-red">17:00</span> Powrót do Kyoto
+          <div class="tl-card"><strong>♿ Dla seniorów</strong>Nara jest płaska i łatwa do chodzenia — idealna! Toalety w parku, dużo ławek. Zdecydowanie najmniej wyczerpujące miejsce całej podróży.</div>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">🐙</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">31 Maja · Niedziela</div>
+        <div class="tl-title">Osaka — stolica jedzenia</div>
+        <div class="tl-desc">
+          Pociąg JR Kyoto → Osaka (~15 min, 580 ¥)<br><br>
+          <span class="badge b-gold">9:00</span> Osaka Castle + muzeum (600 ¥)<br>
+          <span class="badge b-gold">12:00</span> Dotonbori — takoyaki (~600 ¥), okonomiyaki, neon Glico!<br>
+          <span class="badge b-gold">14:00</span> Kuromon Ichiba Market — "kuchnia Osaki", targ rybny<br>
+          <span class="badge b-blue">16:00</span> Shinsaibashi — zakupy (Don Quijote!)<br>
+          <span class="badge b-blue">19:00</span> Kolacja: Chibo okonomiyaki (~1800 ¥) lub Torikizoku izakaya
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble jp">✈️</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">1 Czerwca · Poniedziałek</div>
+        <div class="tl-title">Osaka KIX → Seul ICN</div>
+        <div class="tl-desc">
+          Haruka Express: Kyoto Station → KIX, ~75 min, 3600 ¥ — kupuj online lub automat<br>
+          <div class="tl-card"><strong>⏰ Czas na lotnisku</strong>Przybądź min. 2.5h przed. KIX ma świetne lotniskowe jedzenie (ramen, sushi) — zjedz przed odprawą!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slabel">Korea Południowa 🇰🇷 — Seul</div>
+  <div class="tl-wrap">
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble kr">🏯</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">1–2 Czerwca</div>
+        <div class="tl-title">Stary Seul + Insadong</div>
+        <div class="tl-desc">
+          Kup T-money na lotnisku (GS25). AREX → Seoul Station (43 min, 9000 won)<br><br>
+          <span class="badge b-blue">Rano</span> Gyeongbokgung Palace (3000 won) — zmiana warty 10:00 i 14:00!<br>
+          <span class="badge b-blue">Południe</span> Bukchon Hanok Village — tradycyjna dzielnica<br>
+          <span class="badge b-gold">Obiad</span> Tosokchon: samgyetang (~17 000 won) — kury w żeń-szeniu<br>
+          <span class="badge b-blue">PP</span> Insadong — herbaciarnie, rzemiosło, Ssamziegil
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble kr">🍜</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">2–3 Czerwca</div>
+        <div class="tl-title">Myeongdong + N Tower + Gangnam</div>
+        <div class="tl-desc">
+          <span class="badge b-gold">Rano</span> Myeongdong — zakupy kosmetyki (dla młodszych raj!), street food<br>
+          <span class="badge b-gold">Południe</span> Gwangjang Market: bindaetteok, tteokbokki, mandu (3–8K won)<br>
+          <span class="badge b-blue">PP</span> N Seoul Tower (11 000 won) — widok 360° na Seul<br>
+          <span class="badge b-blue">Wieczór</span> Gangnam: Coex Starfield Bookstore + kolacja BBQ (galbi ~40 000 won/os)
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-aside"><div class="tl-bubble kr">✈️</div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-date">4 Czerwca · Czwartek</div>
+        <div class="tl-title">Powrót do Polski</div>
+        <div class="tl-desc">AREX Express ICN ← Seoul Station (43 min). Bezpiecznej drogi! 🙏</div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: CHECKIN ==================== -->
+<div class="page" id="page-checkin">
+  <div class="hero">
+    <div class="hero-eyebrow">📍 Check-in</div>
+    <div class="hero-title">Zwiedzane <span>miejsca</span></div>
+  </div>
+  <div class="checkin-hero">
+    <div class="ch-label">Postęp podróży</div>
+    <div class="ch-count" id="ch-count">0</div>
+    <div class="ch-total" id="ch-total">z 22 miejsc odwiedzonych</div>
+    <div class="ch-bar-wrap"><div class="ch-bar" id="ch-bar" style="width:0%"></div></div>
+  </div>
+  <div style="padding:0 14px 10px;font-size:12px;color:var(--text3);text-align:center">Kliknij kartę aby oznaczyć jako odwiedzone · niebieska ikonka otwiera Google Maps</div>
+
+  <div class="slabel">Tokio 🗼</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-senso" onclick="checkIn('p-senso')">
+      <div class="p-emoji">⛩️</div><div class="p-name">Senso-ji Asakusa</div><div class="p-city">Tokio · wieczór 25.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.7148,139.7967" target="_blank" onclick="e=>{e.stopPropagation()}">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Nakamise-dori — pamiątki przed/za bramą</div>
+    </div>
+    <div class="place-card" id="p-meiji" onclick="checkIn('p-meiji')">
+      <div class="p-emoji">🌿</div><div class="p-name">Meiji Jingu</div><div class="p-city">Tokio · rano 26.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.6762,139.6993" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Wejście darmowe, las 70 ha</div>
+    </div>
+    <div class="place-card" id="p-shibuya" onclick="checkIn('p-shibuya')">
+      <div class="p-emoji">🚦</div><div class="p-name">Shibuya Crossing</div><div class="p-city">Tokio · 26.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.6595,139.7004" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Najruchliwsze skrzyżowanie świata</div>
+    </div>
+    <div class="place-card" id="p-shibuyasky" onclick="checkIn('p-shibuyasky')">
+      <div class="p-emoji">🌆</div><div class="p-name">Shibuya Sky</div><div class="p-city">Tokio · pp 26.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.6580,139.7016" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Rezerwuj online! ~2000 ¥</div>
+    </div>
+    <div class="place-card" id="p-goldengai" onclick="checkIn('p-goldengai')">
+      <div class="p-emoji">🍶</div><div class="p-name">Golden Gai</div><div class="p-city">Shinjuku · wieczór 26.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.6938,139.7036" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Max 6 os/bar — podzielcie się na pary</div>
+    </div>
+  </div>
+
+  <div class="slabel">Hakone 🗻</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-owakudani" onclick="checkIn('p-owakudani')">
+      <div class="p-emoji">🌋</div><div class="p-name">Owakudani</div><div class="p-city">Hakone · ropeway 27.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.2502,139.0228" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Czarne jajka kuro-tamago!</div>
+    </div>
+    <div class="place-card" id="p-ashi" onclick="checkIn('p-ashi')">
+      <div class="p-emoji">⛵</div><div class="p-name">Jezioro Ashi</div><div class="p-city">Hakone · rejs 27.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.1889,139.0256" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">W cenie Free Pass · widok Fuji</div>
+    </div>
+  </div>
+
+  <div class="slabel">Kyoto ⛩️</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-fushimi" onclick="checkIn('p-fushimi')">
+      <div class="p-emoji">🟠</div><div class="p-name">Fushimi Inari</div><div class="p-city">Kyoto · rano 28.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.9671,135.7727" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Idź PRZED 8:00 — bez tłumów!</div>
+    </div>
+    <div class="place-card" id="p-kiyomizu" onclick="checkIn('p-kiyomizu')">
+      <div class="p-emoji">🏯</div><div class="p-name">Kiyomizudera</div><div class="p-city">Kyoto · 28.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.9948,135.7850" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">600 ¥ · widok na Kyoto</div>
+    </div>
+    <div class="place-card" id="p-arashiyama" onclick="checkIn('p-arashiyama')">
+      <div class="p-emoji">🎋</div><div class="p-name">Las bambusowy</div><div class="p-city">Arashiyama · rano 29.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.0170,135.6720" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">MUSI być przed 7:30!</div>
+    </div>
+    <div class="place-card" id="p-gion" onclick="checkIn('p-gion')">
+      <div class="p-emoji">👘</div><div class="p-name">Gion</div><div class="p-city">Kyoto · wieczór</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.0037,135.7757" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Szansa na spotkanie maiko</div>
+    </div>
+    <div class="place-card" id="p-nishiki" onclick="checkIn('p-nishiki')">
+      <div class="p-emoji">🥢</div><div class="p-name">Nishiki Market</div><div class="p-city">Kyoto · południe</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.0051,135.7672" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">„Kuchnia Kyoto" · 100+ straganów</div>
+    </div>
+    <div class="place-card" id="p-tenryuji" onclick="checkIn('p-tenryuji')">
+      <div class="p-emoji">🧘</div><div class="p-name">Tenryu-ji</div><div class="p-city">Arashiyama · 29.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=35.0169,135.6725" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Ogród zen UNESCO · 500 ¥</div>
+    </div>
+  </div>
+
+  <div class="slabel">Nara 🦌</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-todaiji" onclick="checkIn('p-todaiji')">
+      <div class="p-emoji">🏛️</div><div class="p-name">Todai-ji</div><div class="p-city">Nara · 30.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.6888,135.8398" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Budda 15m · 600 ¥ wstęp</div>
+    </div>
+    <div class="place-card" id="p-deer" onclick="checkIn('p-deer')">
+      <div class="p-emoji">🦌</div><div class="p-name">Nara Park</div><div class="p-city">Jelenie · 30.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.6851,135.8432" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Senbei 200 ¥ · uważaj na jelenie!</div>
+    </div>
+  </div>
+
+  <div class="slabel">Osaka 🐙</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-dotonbori" onclick="checkIn('p-dotonbori')">
+      <div class="p-emoji">🍡</div><div class="p-name">Dotonbori</div><div class="p-city">Osaka · 31.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.6687,135.5012" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Neon Glico · takoyaki · okonomiyaki</div>
+    </div>
+    <div class="place-card" id="p-osakajo" onclick="checkIn('p-osakajo')">
+      <div class="p-emoji">🏯</div><div class="p-name">Osaka Castle</div><div class="p-city">Osaka · 31.05</div>
+      <a class="p-maps" href="https://maps.google.com/?q=34.6873,135.5262" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">600 ¥ · muzeum + park</div>
+    </div>
+  </div>
+
+  <div class="slabel">Seul 🇰🇷</div>
+  <div class="place-grid">
+    <div class="place-card" id="p-gyeongbok" onclick="checkIn('p-gyeongbok')">
+      <div class="p-emoji">🏯</div><div class="p-name">Gyeongbokgung</div><div class="p-city">Seul · 1-2.06</div>
+      <a class="p-maps" href="https://maps.google.com/?q=37.5796,126.9770" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Zmiana warty 10:00 i 14:00!</div>
+    </div>
+    <div class="place-card" id="p-bukchon" onclick="checkIn('p-bukchon')">
+      <div class="p-emoji">🏘️</div><div class="p-name">Bukchon Hanok</div><div class="p-city">Seul · 1-2.06</div>
+      <a class="p-maps" href="https://maps.google.com/?q=37.5824,126.9836" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Tradycyjne domy hanok · piękne zdjęcia</div>
+    </div>
+    <div class="place-card" id="p-ntower" onclick="checkIn('p-ntower')">
+      <div class="p-emoji">📡</div><div class="p-name">N Seoul Tower</div><div class="p-city">Namsan · 2-3.06</div>
+      <a class="p-maps" href="https://maps.google.com/?q=37.5512,126.9882" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">11 000 won · kabelówka lub piechotą</div>
+    </div>
+    <div class="place-card" id="p-gwangjang" onclick="checkIn('p-gwangjang')">
+      <div class="p-emoji">🥘</div><div class="p-name">Gwangjang Market</div><div class="p-city">Seul · 2-3.06</div>
+      <a class="p-maps" href="https://maps.google.com/?q=37.5700,126.9994" target="_blank">🗺 Maps</a>
+      <div class="p-done">✓ Zaliczone!</div>
+      <div class="p-tip">Bindaetteok · mandu · autentyczne!</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: WALLET ==================== -->
+<div class="page" id="page-wallet">
+  <div class="hero">
+    <div class="hero-eyebrow">💸 Portfel</div>
+    <div class="hero-title">Kasa, <span>karty</span> & przelicznik</div>
+  </div>
+
+  <div class="alert alert-danger"><strong>⚠️ Japonia = gotówka!</strong>Małe restauracje, świątynie, izakaya, bary — TYLKO gotówka. Zawsze miej minimum 5000–10 000 ¥ przy sobie.</div>
+
+  <div class="slabel">Szacunkowy budżet / osoba</div>
+  <div class="budget-summary">
+    <div class="budget-card">
+      <div class="bc-label">Japonia · gotówka</div>
+      <div class="bc-val">60–80K</div>
+      <div class="bc-sub">jenów · 1600–2200 PLN</div>
+    </div>
+    <div class="budget-card">
+      <div class="bc-label">Korea · gotówka</div>
+      <div class="bc-val">150–200K</div>
+      <div class="bc-sub">wonów · 450–600 PLN</div>
+    </div>
+  </div>
+
+  <div class="slabel">Podział kosztów / osoba</div>
+  <div class="card">
+    <div class="card-body" style="padding-top:14px">
+      <div class="money-table">
+        <div class="money-row"><span class="ml">Transport JP (Shinkansen+metro)</span><span class="mv">~500–600 PLN</span></div>
+        <div class="money-row"><span class="ml">Jedzenie JP (8 dni, 3 posiłki)</span><span class="mv">~900–1300 PLN</span></div>
+        <div class="money-row"><span class="ml">Wstępy i atrakcje JP</span><span class="mv">~200–350 PLN</span></div>
+        <div class="money-row"><span class="ml">Korea — 3 dni łącznie</span><span class="mv">~500–800 PLN</span></div>
+        <div class="money-row"><span class="ml">eSIM Japan + Korea</span><span class="mv">~80–120 PLN</span></div>
+        <div class="money-row" style="padding-top:12px">
+          <span class="ml" style="font-weight:700;color:var(--text)">ŁĄCZNIE / osoba</span>
+          <span class="mv" style="font-size:16px;color:var(--jp)">2200–3200 PLN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info"><strong>💳 Revolut / Wise</strong>Zainstaluj PRZED wylotem. Zero opłat przewalutowania. Kurs rynkowy. Polecane dla wszystkich 6 osób. Bankomaty JP: tylko 7-Eleven i Japan Post.</div>
+
+  <div class="slabel">Gdzie płacisz kartą w Japonii ✅</div>
+  <div class="card">
+    <div class="card-body" style="padding-top:14px">
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">7-Eleven, FamilyMart, Lawson, MinistOP</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">Sieciowe restauracje: Yoshinoya, Sukiya, McDonald's, Matsuya</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">Domy towarowe: Don Quijote, Loft, Isetan, Takashimaya</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">Bilety Shinkansen (kasa JR, Smart EX)</div></div>
+      <div class="row-item"><div class="row-bullet rb-red">✗</div><div class="row-text"><strong>Małe restauracje, ramen-ya, izakaya, świątynie — GOTÓWKA</strong></div></div>
+    </div>
+  </div>
+
+  <!-- CONVERTER -->
+  <div class="slabel">Przelicznik walut (offline)</div>
+  <div class="converter">
+    <div class="conv-head">
+      <div><div class="conv-title">💱 Kalkulator walut</div><div class="conv-note">Kursy przybliżone · maj 2026</div></div>
+    </div>
+    <div class="conv-body">
+      <div class="conv-input-wrap">
+        <div class="conv-cur">PLN</div>
+        <input class="conv-input" type="number" id="conv-pln" placeholder="0" oninput="convert('pln')" inputmode="decimal">
+      </div>
+      <div class="conv-result" id="conv-result">
+        <div class="conv-res-row"><span class="conv-res-label">🇯🇵 Jeny (JPY)</span><span class="conv-res-val" id="cr-jpy">—</span></div>
+        <div class="conv-res-row"><span class="conv-res-label">🇰🇷 Wony (KRW)</span><span class="conv-res-val" id="cr-krw">—</span></div>
+        <div class="conv-res-row"><span class="conv-res-label">🇪🇺 Euro (EUR)</span><span class="conv-res-val" id="cr-eur">—</span></div>
+      </div>
+      <div class="conv-tip">1 PLN ≈ 37 ¥ · 1 PLN ≈ 330 ₩ · 1 EUR ≈ 4.28 PLN<br>Kurs orientacyjny — sprawdź aktualne dane w Revolut</div>
+    </div>
+  </div>
+
+  <!-- SPLIT BILL -->
+  <div class="slabel">Podziel rachunek 🍜</div>
+  <div class="split">
+    <div class="split-head"><div class="card-title">💰 Split bill dla grupy</div><div class="card-sub">Wpisz kwotę rachunku i wybierz walutę</div></div>
+    <div class="split-body">
+      <div class="split-row">
+        <div class="split-label">Rachunek</div>
+        <input class="split-input" type="number" id="split-amount" placeholder="3000" oninput="calcSplit()" inputmode="decimal">
+      </div>
+      <div class="split-row">
+        <div class="split-label">Waluta</div>
+        <select class="split-sel" id="split-cur" onchange="calcSplit()">
+          <option value="jpy">¥ Jeny (JPY)</option>
+          <option value="krw">₩ Wony (KRW)</option>
+          <option value="pln">zł Złote (PLN)</option>
+        </select>
+      </div>
+      <div class="split-row">
+        <div class="split-label">Osób</div>
+        <select class="split-sel" id="split-persons" onchange="calcSplit()">
+          <option value="6" selected>6 osób (cała grupa)</option>
+          <option value="2">2 osoby</option>
+          <option value="3">3 osoby</option>
+          <option value="4">4 osoby</option>
+          <option value="5">5 osób</option>
+        </select>
+      </div>
+      <div class="split-result">
+        <div class="sr-label">NA OSOBĘ</div>
+        <div class="sr-main" id="split-result">—</div>
+        <div class="sr-sub" id="split-pln">Wpisz kwotę aby obliczyć</div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: MORE (DRAWER HOST) ==================== -->
+
+<!-- ==================== PAGE: FOOD ==================== -->
+<div class="page" id="page-food">
+  <div class="hero">
+    <div class="hero-eyebrow">🍜 Jedzenie</div>
+    <div class="hero-title">Gdzie <span>jeść</span></div>
+    <div class="hero-sub">Autentyczne, lokalne, niedrogo — budżet niski i średni</div>
+  </div>
+
+  <div class="alert alert-ok"><strong>🥢 Zasada Japonii</strong>Szukaj długich kolejek przed lokalem — to znak, że jest świetne. Nie karmicie się w turystycznych pułapkach przy wejściach do świątyń!</div>
+
+  <div class="slabel">Tokio 🗼</div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Fuunji</div><div class="resto-price">~1000 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Tsukemen (maczany ramen) — lokalne TOP. Kolejka 15–30 min, warto. Bulion sojowy, grube makarony.</div></div><div class="resto-footer"><div class="resto-city">Shinjuku · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=35.6938,139.7005" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Ichiran Ramen</div><div class="resto-price">~900 ¥</div></div><div class="resto-stars">★★★★</div><div class="resto-desc">Kultowy ramen w indywidualnych boksach. Zamawiasz na kartce bez japońskiego. Idealne na pierwsze jedzenie w Japonii.</div></div><div class="resto-footer"><div class="resto-city">Shinjuku / Shibuya · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=35.6940,139.7038" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Afuri Ramen</div><div class="resto-price">~1200 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Yuzu shio — lekki, cytrusowy bulion drobiowy. Zupełnie inny niż tonkotsu. Polecane dla seniorów (lżejsze).</div></div><div class="resto-footer"><div class="resto-city">Harajuku · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=35.6700,139.7028" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Torikizoku</div><div class="resto-price">~2000 ¥</div></div><div class="resto-stars">★★★★</div><div class="resto-desc">Izakaya-sieciówka: wszystkie szaszłyki po 330 ¥. Głośno, wesoło, idealnie dla grupy. Piwo do tego ~500 ¥.</div></div><div class="resto-footer"><div class="resto-city">Shinjuku / Shibuya · średnie</div><a class="resto-maps" href="https://maps.google.com/?q=35.6941,139.7037" target="_blank">🗺 Mapa</a></div></div>
+
+  <div class="slabel">Kyoto ⛩️</div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Nishiki Market</div><div class="resto-price">500–1500 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Targ z jedzeniem — 100+ straganów. Dango, tofu dashi, yatsuhashi (ciastka), pickles. Obowiązkowe!</div></div><div class="resto-footer"><div class="resto-city">Centrum Kyoto · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=35.0051,135.7672" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Katsukura (Sanjo)</div><div class="resto-price">~1500 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Tonkatsu (kotlet w panierce) — mielisz sesam sam, lekka kapusta. Smaczne, syte, dobre dla starszych.</div></div><div class="resto-footer"><div class="resto-city">Sanjo Kyoto · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=35.0088,135.7694" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Yoshimura Soba</div><div class="resto-price">~1300 ¥</div></div><div class="resto-stars">★★★★</div><div class="resto-desc">Soba z widokiem — przy schodach do Kiyomizudera. Gryczany makaron, lekkie buliony. Doskonała lokalizacja.</div></div><div class="resto-footer"><div class="resto-city">Kiyomizudera · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=34.9951,135.7843" target="_blank">🗺 Mapa</a></div></div>
+
+  <div class="slabel">Osaka 🐙</div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Takoyaki Juhachiban</div><div class="resto-price">~600 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Najlepsze takoyaki Osaki. 8 kulek z ośmiornicą, sos, bonito. Kolejka = dowód jakości.</div></div><div class="resto-footer"><div class="resto-city">Dotonbori · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=34.6688,135.5004" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Chibo Okonomiyaki</div><div class="resto-price">~1800 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Okonomiyaki — gotujesz sam na wbudowanej płycie lub zamawiasz gotowe. Kultowe. Osaka-style (warstwowe).</div></div><div class="resto-footer"><div class="resto-city">Dotonbori · średnie</div><a class="resto-maps" href="https://maps.google.com/?q=34.6690,135.5010" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Kuromon Ichiba Market</div><div class="resto-price">800–2000 ¥</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Targ rybny "kuchnia Osaki". Owoce morza na patykach, sashimi prosto od rybaków. Autentyczne i tanie.</div></div><div class="resto-footer"><div class="resto-city">Nipponbashi Osaka · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=34.6682,135.5072" target="_blank">🗺 Mapa</a></div></div>
+
+  <div class="slabel">Seul 🇰🇷</div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Gwangjang Market</div><div class="resto-price">3–8 000 ₩</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Rynek z 1905 r. Bindaetteok (naleśnik z fasoli), tteokbokki (pikantny ryż), mandu (pierogi). Najautentyczniejsze.</div></div><div class="resto-footer"><div class="resto-city">Seul centrum · budżetowe</div><a class="resto-maps" href="https://maps.google.com/?q=37.5700,126.9994" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Tosokchon</div><div class="resto-price">~17 000 ₩</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Samgyetang — cały kurczak faszerowany ryżem w bulionie żeń-szeniowym. Kultowe, zdrowe. Kolejka od rana. Idealne dla seniorów.</div></div><div class="resto-footer"><div class="resto-city">Gyeongbokgung · średnie</div><a class="resto-maps" href="https://maps.google.com/?q=37.5814,126.9725" target="_blank">🗺 Mapa</a></div></div>
+  <div class="resto"><div class="resto-top"><div class="resto-name-row"><div class="resto-name">Maple Tree House</div><div class="resto-price">~40 000 ₩</div></div><div class="resto-stars">★★★★★</div><div class="resto-desc">Galbi (żebra) i bulgogi z grilla węglowego. Pyszne mięso, dobra obsługa, warto zarezerwować.</div></div><div class="resto-footer"><div class="resto-city">Itaewon · średnie-wyższe</div><a class="resto-maps" href="https://maps.google.com/?q=37.5349,126.9946" target="_blank">🗺 Mapa</a></div></div>
+
+  <div class="alert alert-warn"><strong>🙅 Napiwki = NIE!</strong>Ani w Japonii, ani w Korei. To niekulturalne lub zbędne. Zaoszczędzone pieniądze = dodatkowy ramen!</div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: INFO ==================== -->
+<div class="page" id="page-info">
+  <div class="hero">
+    <div class="hero-eyebrow">ℹ️ Info</div>
+    <div class="hero-title">Logistyka <span>& pomoc</span></div>
+  </div>
+
+  <!-- QUICK START -->
+  <div class="slabel">🚀 Szybki start — lotnisko</div>
+  <div class="qs-card">
+    <div class="qs-head">
+      <div class="qs-head-title">Po wylądowaniu w Tokio</div>
+      <div class="qs-head-sub">Wykonaj te kroki zanim wyjdziesz z lotniska</div>
+    </div>
+    <div class="qs-steps">
+      <div class="qs-step"><div class="qs-num">1</div><div class="qs-text"><strong>Aktywuj eSIM w samolocie</strong> — tryb samolotowy → skanuj QR z Airalo. Internet od razu po lądowaniu.</div></div>
+      <div class="qs-step"><div class="qs-num">2</div><div class="qs-text"><strong>Odprawa celna z QR</strong> — miej Visit Japan Web gotowy, przyspiesza odprawę dla 6 osób o 15+ min.<br><a class="qs-link" href="https://vjw-lp.digital.go.jp" target="_blank">🌐 vjw-lp.digital.go.jp</a></div></div>
+      <div class="qs-step"><div class="qs-num">3</div><div class="qs-text"><strong>Suica</strong> — automat JR (Suica/ICOCA) lub sprawdź Apple/Google Wallet. Kaucja 500 ¥ + wgraj 5000 ¥.</div></div>
+      <div class="qs-step"><div class="qs-num">4</div><div class="qs-text"><strong>Gotówka</strong> — bankomat 7-Eleven przy wyjściu przyjmuje karty zagraniczne. Lepszy kurs niż kantor na lotnisku.</div></div>
+      <div class="qs-step"><div class="qs-num">5</div><div class="qs-text"><strong>Pociąg do centrum</strong> — Narita: N'EX ~55 min / Haneda: Keikyu ~30 min. Płać Suicą.</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">🇰🇷 Przed wylotem do Korei</div>
+  <div class="alert alert-danger"><strong>K-ETA — OBOWIĄZKOWA dla Polaków!</strong>Koszt ~10 000 won (~30 PLN/os). Złóż min. 72h przed wylotem. Ważna 2 lata.<br><a href="https://www.k-eta.go.kr" target="_blank" style="color:var(--jp);font-weight:700">→ www.k-eta.go.kr</a></div>
+
+  <!-- EMERGENCY -->
+  <div class="slabel">🚨 Numery alarmowe</div>
+  <div class="emerg-card">
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🚒</div><div><div class="emerg-label">Straż / Pogotowie JP</div><div class="emerg-sub">Japonia</div></div></div><a class="emerg-call" href="tel:119">📞 119</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🚓</div><div><div class="emerg-label">Policja JP</div><div class="emerg-sub">Japonia</div></div></div><a class="emerg-call" href="tel:110">📞 110</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">📞</div><div><div class="emerg-label">Ambasada PL Tokio</div><div class="emerg-sub">+81 3-5794-7020</div></div></div><a class="emerg-call" href="tel:+81357947020">📞</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🌐</div><div><div class="emerg-label">Japan Visitor Hotline</div><div class="emerg-sub">24h · angielski</div></div></div><a class="emerg-call" href="tel:0570031911">0570-031911</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🚒</div><div><div class="emerg-label">Straż / Pogotowie KR</div><div class="emerg-sub">Korea Pd.</div></div></div><a class="emerg-call blue" href="tel:119">📞 119</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🚓</div><div><div class="emerg-label">Policja KR</div><div class="emerg-sub">Korea Pd.</div></div></div><a class="emerg-call blue" href="tel:112">📞 112</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">📞</div><div><div class="emerg-label">Ambasada PL Seul</div><div class="emerg-sub">+82 2-723-9681</div></div></div><a class="emerg-call blue" href="tel:+8227239681">📞</a></div>
+    <div class="emerg-row"><div class="emerg-left"><div class="emerg-ico">🌐</div><div><div class="emerg-label">Tourist Helpline KR</div><div class="emerg-sub">24h · angielski</div></div></div><a class="emerg-call blue" href="tel:1330">1330</a></div>
+  </div>
+
+  <!-- APPS -->
+  <div class="slabel">📱 Aplikacje — pobierz przed wylotem</div>
+  <div class="app-card"><div class="app-ico">🗺️</div><div><div class="app-name">Google Maps</div><div class="app-desc">Pobierz mapy OFFLINE: Tokyo, Kyoto, Osaka, Seoul. Transport publiczny + godziny otwarcia.</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-kr">KR</span><span class="app-tag tag-must">MUST</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🔤</div><div><div class="app-name">Google Translate</div><div class="app-desc">Tryb aparatu — skanuj menu/tabliczki! Pobierz pakiety offline: japoński + koreański.</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-kr">KR</span><span class="app-tag tag-must">MUST</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🚃</div><div><div class="app-name">Navitime Japan</div><div class="app-desc">Rozkłady JR + metro, najlepsza nawigacja kolejowa w Japonii. Lepiej niż Google Maps dla pociągów.</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-must">MUST</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🟡</div><div><div class="app-name">Suica (Apple/Google Wallet)</div><div class="app-desc">Dodaj przed wylotem. Płać telefonem — bez fizycznej karty. Działa od lądowania.</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-must">MUST</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🗺️</div><div><div class="app-name">Naver Map</div><div class="app-desc">Korea: znacznie lepszy niż Google Maps. Dokładne czasy metra, busy, pieszo.</div><div class="app-tags"><span class="app-tag tag-kr">KR</span><span class="app-tag tag-must">MUST</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🚇</div><div><div class="app-name">Kakao Metro</div><div class="app-desc">Metro Seul — najlepsza aplikacja. Podpowie linie, czas przejazdu, przesiadki.</div><div class="app-tags"><span class="app-tag tag-kr">KR</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🍜</div><div><div class="app-name">Tabelog</div><div class="app-desc">Oceny restauracji — japoński TripAdvisor. Sprawdzaj przed wizytą. Ocena 3.5+ = dobra.</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">🚕</div><div><div class="app-name">Kakao T</div><div class="app-desc">Taxi Seul — jak Uber. Tańsze niż taksówki z ulicy, angielski interfejs.</div><div class="app-tags"><span class="app-tag tag-kr">KR</span><span class="app-tag tag-free">Darmowa</span></div></div></div>
+  <div class="app-card"><div class="app-ico">💰</div><div><div class="app-name">Revolut</div><div class="app-desc">Karta wielowalutowa. Zero opłat za przewalutowanie PLN→JPY/KRW. Konieczne dla 6 osób!</div><div class="app-tags"><span class="app-tag tag-jp">JP</span><span class="app-tag tag-kr">KR</span><span class="app-tag tag-must">MUST</span></div></div></div>
+
+  <!-- ESIM -->
+  <div class="slabel">🌐 eSIM</div>
+  <div class="alert alert-ok"><strong>Airalo — kup PRZED wylotem</strong>Japonia 10 GB / 10 dni: ~35–50 PLN. Kup combo JP+KR lub osobno KR przed przesiadką. Aktywuj QR w samolocie → internet od razu po lądowaniu.<br>Warunek: telefon musi obsługiwać eSIM i być ODBLOKOWANY (unlocked).</div>
+
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: PACK ==================== -->
+<div class="page" id="page-pack">
+  <div class="hero">
+    <div class="hero-eyebrow">🎒 Pakowanie</div>
+    <div class="hero-title">Lista <span>rzeczy</span></div>
+    <div class="hero-sub">Kliknij aby odhaczać · koniec maja — ciepło i wilgotno (22–28°C)</div>
+  </div>
+
+  <div class="slabel">📋 Dokumenty i formalności</div>
+  <div class="checklist-card" id="cl-docs">
+    <div class="cl-item" onclick="toggleCheck(this,'d1')"><div class="cl-box" id="d1"></div><div class="cl-text"><strong>Paszporty</strong> — ważne min. 6 mies. po 4.06.2026 <span class="cl-urgent">KRYTYCZNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d2')"><div class="cl-box" id="d2"></div><div class="cl-text"><strong>K-ETA Korea</strong> — złóż online min. 72h przed wylotem (~30 PLN/os) <span class="cl-urgent">KRYTYCZNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d3')"><div class="cl-box" id="d3"></div><div class="cl-text"><strong>Visit Japan Web</strong> — rejestracja celna JP, QR przyspiesza odprawę <span class="cl-urgent">WAŻNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d4')"><div class="cl-box" id="d4"></div><div class="cl-text">Potwierdzenia hoteli — print lub PDF offline</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d5')"><div class="cl-box" id="d5"></div><div class="cl-text">Potwierdzenia lotów</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d6')"><div class="cl-box" id="d6"></div><div class="cl-text">Ubezpieczenie podróżne — z pokryciem medycznym! <span class="cl-urgent">WAŻNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d7')"><div class="cl-box" id="d7"></div><div class="cl-text">Kopia paszportów w emailu / Google Drive (dostęp offline)</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d8')"><div class="cl-box" id="d8"></div><div class="cl-text">Poinformuj bank o wyjeździe i odblokuj karty</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'d9')"><div class="cl-box" id="d9"></div><div class="cl-text">Lista leków + recepty po angielsku (dla seniorów!)</div></div>
+  </div>
+
+  <div class="slabel">📱 Elektronika</div>
+  <div class="checklist-card">
+    <div class="cl-item" onclick="toggleCheck(this,'e1')"><div class="cl-box" id="e1"></div><div class="cl-text"><strong>eSIM Airalo</strong> — kup i pobierz QR przed wylotem <span class="cl-urgent">WAŻNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e2')"><div class="cl-box" id="e2"></div><div class="cl-text"><strong>Suica w Apple/Google Wallet</strong> — dodaj i wgraj 5000 ¥</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e3')"><div class="cl-box" id="e3"></div><div class="cl-text"><strong>Powerbank</strong> min. 10 000 mAh — długie dni, 15 000+ kroków</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e4')"><div class="cl-box" id="e4"></div><div class="cl-text"><strong>Adapter US/JP</strong> — Japonia i Korea używają 2 płaskich bolców (jak USA)</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e5')"><div class="cl-box" id="e5"></div><div class="cl-text">Kable USB-C / Lightning i ładowarki</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e6')"><div class="cl-box" id="e6"></div><div class="cl-text">Google Maps offline — Tokio, Kyoto, Osaka, Seul</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e7')"><div class="cl-box" id="e7"></div><div class="cl-text">Google Translate pakiety offline — japoński + koreański</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e8')"><div class="cl-box" id="e8"></div><div class="cl-text">Aparat / dodatkowe karty SD</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e9')"><div class="cl-box" id="e9"></div><div class="cl-text">Statyw / selfie stick dla 6 osób 📸</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'e10')"><div class="cl-box" id="e10"></div><div class="cl-text">Słuchawki — metro i Shinkansen</div></div>
+  </div>
+
+  <div class="slabel">👕 Ubrania (koniec maja, ciepło+wilgotno)</div>
+  <div class="checklist-card">
+    <div class="cl-item" onclick="toggleCheck(this,'u1')"><div class="cl-box" id="u1"></div><div class="cl-text">T-shirty / bluzki (6 szt.) — lekkie, oddychające</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u2')"><div class="cl-box" id="u2"></div><div class="cl-text">Spodnie lub spodenki (3 pary) — lekkie materiały</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u3')"><div class="cl-box" id="u3"></div><div class="cl-text">Lekka kurtka/bluza — Kyoto wieczorami chłodniejsze</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u4')"><div class="cl-box" id="u4"></div><div class="cl-text"><strong>Wygodne buty</strong> — min. 15 000 kroków dziennie! <span class="cl-urgent">WAŻNE</span></div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u5')"><div class="cl-box" id="u5"></div><div class="cl-text">Klapki / sandały na wieczór</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u6')"><div class="cl-box" id="u6"></div><div class="cl-text"><strong>Skarpetki bez dziur</strong> — zdejmujesz buty w świątyniach!</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u7')"><div class="cl-box" id="u7"></div><div class="cl-text">Strój kąpielowy — onsen w Hakone!</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u8')"><div class="cl-box" id="u8"></div><div class="cl-text">Składany parasol lub peleryna — deszcze są możliwe</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'u9')"><div class="cl-box" id="u9"></div><div class="cl-text">Nakrycie ramion — do świątyń (szalik/lekka bluza)</div></div>
+  </div>
+
+  <div class="slabel">💊 Apteczka i zdrowie</div>
+  <div class="checklist-card">
+    <div class="cl-item" onclick="toggleCheck(this,'a1')"><div class="cl-box" id="a1"></div><div class="cl-text">Leki na biegunkę (Imodium) — inne jedzenie, nowy układ pokarmowy</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a2')"><div class="cl-box" id="a2"></div><div class="cl-text">Plastry na pęcherze — dużo chodzenia!</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a3')"><div class="cl-box" id="a3"></div><div class="cl-text">Krem z filtrem SPF 50 — słońce silniejsze w JP</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a4')"><div class="cl-box" id="a4"></div><div class="cl-text">Środek na owady (komary wieczorami w parkach)</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a5')"><div class="cl-box" id="a5"></div><div class="cl-text">Leki przeciwbólowe / przeciwgorączkowe</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a6')"><div class="cl-box" id="a6"></div><div class="cl-text">Regularne leki — ZAWSZE więcej niż potrzebujesz (dla seniorów!)</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a7')"><div class="cl-box" id="a7"></div><div class="cl-text">Chusteczki / mokre ściereczki — śmietników w JP prawie brak</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'a8')"><div class="cl-box" id="a8"></div><div class="cl-text">Elektrolity / tabletki na zmęczenie w upale</div></div>
+  </div>
+
+  <div class="slabel">✨ Przydatne drobiazgi</div>
+  <div class="checklist-card">
+    <div class="cl-item" onclick="toggleCheck(this,'g1')"><div class="cl-box" id="g1"></div><div class="cl-text">Nerka / mała torebka na gotówkę i Suica</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'g2')"><div class="cl-box" id="g2"></div><div class="cl-text">Składana torba na zakupy — JP nie dają torebek</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'g3')"><div class="cl-box" id="g3"></div><div class="cl-text">Wizytówki hoteli — poproś na recepcji, pokaż taksówkarzowi</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'g4')"><div class="cl-box" id="g4"></div><div class="cl-text">Mała butelka wody — konbini ~100 ¥, uzupełniaj</div></div>
+    <div class="cl-item" onclick="toggleCheck(this,'g5')"><div class="cl-box" id="g5"></div><div class="cl-text">Przenośny wentylator — Japonia latem bywa bardzo gorąca</div></div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: PHRASES ==================== -->
+<div class="page" id="page-phrases">
+  <div class="hero">
+    <div class="hero-eyebrow">🗣️ Rozmówki</div>
+    <div class="hero-title">Japońskie <span>&amp; koreańskie</span></div>
+    <div class="hero-sub">Kliknij 🔊 aby usłyszeć wymowę (Text-to-Speech)</div>
+  </div>
+
+  <div class="slabel">🎌 Japoński — niezbędnik</div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">ありがとうございます</div><div class="phrase-rom">Arigatō gozaimasu</div><div class="phrase-pl">Bardzo dziękuję (formalne)</div></div><button class="phrase-tts" onclick="speak('ありがとうございます','ja-JP')">🔊</button></div><div class="phrase-context">Używaj wszędzie — w restauracjach, sklepach, świątyniach</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">すみません</div><div class="phrase-rom">Sumimasen</div><div class="phrase-pl">Przepraszam / Hej, tu proszę!</div></div><button class="phrase-tts" onclick="speak('すみません','ja-JP')">🔊</button></div><div class="phrase-context">Żeby przywołać kelnera lub przepchnąć się przez tłum</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">これをください</div><div class="phrase-rom">Kore o kudasai</div><div class="phrase-pl">Poproszę to (wskazujesz palcem)</div></div><button class="phrase-tts" onclick="speak('これをください','ja-JP')">🔊</button></div><div class="phrase-context">Do zamawiania jedzenia bez znajomości japońskiego</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">いくらですか？</div><div class="phrase-rom">Ikura desu ka?</div><div class="phrase-pl">Ile to kosztuje?</div></div><button class="phrase-tts" onclick="speak('いくらですか','ja-JP')">🔊</button></div><div class="phrase-context">Na targu lub w małym sklepiku</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">トイレはどこですか？</div><div class="phrase-rom">Toire wa doko desu ka?</div><div class="phrase-pl">Gdzie jest toaleta?</div></div><button class="phrase-tts" onclick="speak('トイレはどこですか','ja-JP')">🔊</button></div><div class="phrase-context">Toalety w JP są rewelacyjne i zawsze wolne!</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">英語を話せますか？</div><div class="phrase-rom">Eigo o hanasemasu ka?</div><div class="phrase-pl">Czy mówi Pan/Pani po angielsku?</div></div><button class="phrase-tts" onclick="speak('英語を話せますか','ja-JP')">🔊</button></div><div class="phrase-context">Alternatywa: otwórz Google Translate aparat</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">〜はどこですか？</div><div class="phrase-rom">[nazwa] wa doko desu ka?</div><div class="phrase-pl">Gdzie jest [nazwa miejsca]?</div></div><button class="phrase-tts" onclick="speak('どこですか','ja-JP')">🔊</button></div><div class="phrase-context">Zastąp 〜 nazwą z Google Maps — pokaż telefon</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig">おいしい！</div><div class="phrase-rom">Oishii!</div><div class="phrase-pl">Pycha! / Pyszne!</div></div><button class="phrase-tts" onclick="speak('おいしい','ja-JP')">🔊</button></div><div class="phrase-context">Kucharz będzie zachwycony — używaj szczerze!</div></div>
+
+  <div class="slabel">🇰🇷 Koreański — niezbędnik</div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">감사합니다</div><div class="phrase-rom">Gamsahamnida</div><div class="phrase-pl">Dziękuję (formalne)</div></div><button class="phrase-tts" onclick="speak('감사합니다','ko-KR')">🔊</button></div><div class="phrase-context">Używaj jak Arigatō — wszędzie i zawsze</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">저기요</div><div class="phrase-rom">Jeogiyo</div><div class="phrase-pl">Przepraszam (kelner, sprzedawca)</div></div><button class="phrase-tts" onclick="speak('저기요','ko-KR')">🔊</button></div><div class="phrase-context">Żeby przywołać obsługę w restauracji</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">이거 주세요</div><div class="phrase-rom">Igeo juseyo</div><div class="phrase-pl">Poproszę to (wskazujesz)</div></div><button class="phrase-tts" onclick="speak('이거 주세요','ko-KR')">🔊</button></div><div class="phrase-context">Do zamawiania bez koreańskiego</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">얼마예요?</div><div class="phrase-rom">Eolmayeyo?</div><div class="phrase-pl">Ile kosztuje?</div></div><button class="phrase-tts" onclick="speak('얼마예요','ko-KR')">🔊</button></div><div class="phrase-context">Na Gwangjang Market i ulicznych stoiskach</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">화장실 어디예요?</div><div class="phrase-rom">Hwajangsil eodiyeyo?</div><div class="phrase-pl">Gdzie jest toaleta?</div></div><button class="phrase-tts" onclick="speak('화장실 어디예요','ko-KR')">🔊</button></div><div class="phrase-context">Toalety w metrze seulskim — zawsze darmowe</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">맛있어요!</div><div class="phrase-rom">Masisseoyo!</div><div class="phrase-pl">Pyszne!</div></div><button class="phrase-tts" onclick="speak('맛있어요','ko-KR')">🔊</button></div><div class="phrase-context">Kucharz przy BBQ będzie zachwycony</div></div>
+  <div class="phrase-card"><div class="phrase-inner"><div class="phrase-text"><div class="phrase-orig kr">영수증 주세요</div><div class="phrase-rom">Yeongsujung juseyo</div><div class="phrase-pl">Poproszę paragon</div></div><button class="phrase-tts" onclick="speak('영수증 주세요','ko-KR')">🔊</button></div><div class="phrase-context">Do kontroli wydatków i zwrotu VAT na lotnisku</div></div>
+
+  <div class="spacer"></div>
+</div>
+
+<!-- ==================== PAGE: TRANSPORT ==================== -->
+<div class="page" id="page-transport">
+  <div class="hero">
+    <div class="hero-eyebrow">🚄 Transport</div>
+    <div class="hero-title">Bilety <span>&amp; karty</span></div>
+  </div>
+
+  <div class="alert alert-danger"><strong>🚫 JR Pass — NIE KUPUJCIE!</strong>Przy waszej trasie bilety osobno wychodzą taniej o ok. 20–30%. JR Pass (55 000+ ¥/os) opłaca się tylko przy codziennych długich Shinkansen.</div>
+
+  <div class="slabel">Suica 🇯🇵 — karta do wszystkiego</div>
+  <div class="card">
+    <div class="card-head"><div class="card-ico ico-gold">🟡</div><div><div class="card-title">Suica / ICOCA</div><div class="card-sub">Metro · JR · autobus · sklepy</div></div></div>
+    <div class="card-body">
+      <div class="row-item"><div class="row-bullet rb-green">★</div><div class="row-text"><strong>Najlepsza opcja:</strong> dodaj Suica do Apple/Google Wallet przed wylotem. Zero kaucji, działa od razu.</div></div>
+      <div class="row-item"><div class="row-bullet rb-gold">📍</div><div class="row-text"><strong>Na lotnisku:</strong> automat JR → Suica. Kaucja 500 ¥ + min. 2000 ¥ doładowanie.</div></div>
+      <div class="row-item"><div class="row-bullet rb-blue">i</div><div class="row-text">Każda osoba musi mieć własną. <strong>Wgraj 5000–7000 ¥ na start.</strong> Doładuj w każdym automacie lub konbini.</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">ICOCA (Kyoto/Osaka) jest w 100% kompatybilna — nie musisz kupować drugiej karty.</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Shinkansen 🚄 — ceny biletów</div>
+  <div class="card">
+    <div class="card-body" style="padding-top:14px">
+      <div class="money-table">
+        <div class="money-row"><span class="ml">Tokio → Odawara (Hakone)</span><span class="mv">~1 420 ¥</span></div>
+        <div class="money-row"><span class="ml">Odawara → Kyoto</span><span class="mv">~13 600 ¥</span></div>
+        <div class="money-row"><span class="ml">Kyoto → KIX (Haruka Express)</span><span class="mv">~3 600 ¥</span></div>
+        <div class="money-row"><span class="ml">Kyoto ↔ Nara (Kintetsu)</span><span class="mv">~720 ¥ / stronę</span></div>
+        <div class="money-row"><span class="ml">Kyoto ↔ Osaka (JR Shinkaisoku)</span><span class="mv">~580 ¥ / stronę</span></div>
+        <div class="money-row"><span class="ml">N'EX Narita → Shinjuku</span><span class="mv">~3 070 ¥</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="alert alert-info"><strong>Smart EX</strong> — aplikacja JR do kupowania Shinkansen z kartą zagraniczną. Alternatywa: automat JR na dworcu. Przy 6 osobach <strong>rezerwuj miejsca razem!</strong></div>
+
+  <div class="slabel">Hakone Free Pass 🏔️</div>
+  <div class="card">
+    <div class="card-body" style="padding-top:14px">
+      <div class="row-item"><div class="row-bullet rb-gold">¥</div><div class="row-text"><strong>~6100 ¥/os</strong> (2-dniowy). Dla 6 osób: ~36 600 ¥ łącznie.</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">Zawiera: kolej zębatą, ropeway, funicular, autobusy Tozan, rejs po jeziorze Ashi.</div></div>
+      <div class="row-item"><div class="row-bullet rb-blue">📍</div><div class="row-text">Kup w kasie Odakyu, dworzec Odawara lub aplikacja Odakyu Online.</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Transport miejski 🏙️</div>
+  <div class="card">
+    <div class="card-body" style="padding-top:14px">
+      <div class="row-item"><div class="row-bullet rb-red">東</div><div class="row-text"><strong>Tokio:</strong> Metro Tokyo + Toei — płać Suica. Nigdy nie kupuj papierowych biletów jednorazowych.</div></div>
+      <div class="row-item"><div class="row-bullet rb-gold">京</div><div class="row-text"><strong>Kyoto:</strong> Autobus 230 ¥/kurs. Kyoto City Bus Day Pass 700 ¥ jeśli dużo zwiedzasz.</div></div>
+      <div class="row-item"><div class="row-bullet rb-blue">大</div><div class="row-text"><strong>Osaka:</strong> Metro Suica. Osaka Amazing Pass 2900 ¥/dzień (wiele atrakcji).</div></div>
+    </div>
+  </div>
+
+  <div class="slabel">Korea — T-money 🇰🇷</div>
+  <div class="card">
+    <div class="card-head"><div class="card-ico ico-blue">🔵</div><div><div class="card-title">T-money — Seul</div><div class="card-sub">Metro · bus · taxi · sklepy</div></div></div>
+    <div class="card-body">
+      <div class="row-item"><div class="row-bullet rb-green">📍</div><div class="row-text">Kup w GS25/CU na lotnisku Incheon. 5000 won karta + doładuj 30 000 won.</div></div>
+      <div class="row-item"><div class="row-bullet rb-blue">🚆</div><div class="row-text"><strong>AREX Express:</strong> ICN→Seoul Station, 43 min, 9000 won. Lub AREX All-Stop: 66 min, 4150 won.</div></div>
+      <div class="row-item"><div class="row-bullet rb-green">✓</div><div class="row-text">Przesiadki w metrze bezpłatne w ciągu 30 min — ogromna oszczędność!</div></div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+</div><!-- end main -->
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">Więcej sekcji</div>
+  <div class="drawer-grid">
+    <div class="drawer-btn" onclick="openFromDrawer('food')"><div class="drawer-btn-icon">🍜</div><div class="drawer-btn-label">Jedzenie</div><div class="drawer-btn-sub">Restauracje JP & KR</div></div>
+    <div class="drawer-btn" onclick="openFromDrawer('info')"><div class="drawer-btn-icon">ℹ️</div><div class="drawer-btn-label">Info & Pomoc</div><div class="drawer-btn-sub">Numery, aplikacje, eSIM</div></div>
+    <div class="drawer-btn" onclick="openFromDrawer('pack')"><div class="drawer-btn-icon">🎒</div><div class="drawer-btn-label">Pakowanie</div><div class="drawer-btn-sub">Checklista rzeczy</div></div>
+    <div class="drawer-btn" onclick="openFromDrawer('phrases')"><div class="drawer-btn-icon">🗣️</div><div class="drawer-btn-label">Rozmówki</div><div class="drawer-btn-sub">JP & KR z wymową</div></div>
+    <div class="drawer-btn" onclick="openFromDrawer('transport')"><div class="drawer-btn-icon">🚄</div><div class="drawer-btn-label">Transport</div><div class="drawer-btn-sub">Suica, Shinkansen</div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <button class="bnav-item active" id="nav-plan" onclick="navigate('plan','nav-plan')"><span class="bnav-icon">🗓</span><span class="bnav-label">Plan</span></button>
+  <button class="bnav-item" id="nav-checkin" onclick="navigate('checkin','nav-checkin')"><span class="bnav-icon">📍</span><span class="bnav-label">Check-in</span><span class="bnav-dot" id="dot-checkin"></span></button>
+  <button class="bnav-item" id="nav-wallet" onclick="navigate('wallet','nav-wallet')"><span class="bnav-icon">💸</span><span class="bnav-label">Portfel</span></button>
+  <button class="bnav-item" id="nav-more" onclick="openDrawer()"><span class="bnav-icon">☰</span><span class="bnav-label">Więcej</span></button>
+</div>
+
+<script>
+// ---- NAV ----
+const mainNavMap = {'plan':'nav-plan','checkin':'nav-checkin','wallet':'nav-wallet'};
+function navigate(id, navId) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('main').scrollTop=0;
+  if(navId) document.getElementById(navId).classList.add('active');
+  else document.getElementById('nav-more').classList.add('active');
+}
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+function openFromDrawer(id) {
+  closeDrawer();
+  navigate(id, null);
+}
+
+// ---- CHECKIN ----
+const TOTAL=22;
+function getV(){try{return JSON.parse(localStorage.getItem('jpkr_v')||'{}')}catch(e){return{}}}
+function saveV(v){try{localStorage.setItem('jpkr_v',JSON.stringify(v))}catch(e){}}
+function checkIn(id){
+  const v=getV(); const card=document.getElementById(id);
+  if(!card)return;
+  if(v[id]){delete v[id];card.classList.remove('visited');}
+  else{v[id]=new Date().toLocaleDateString('pl-PL');card.classList.add('visited');card.style.transform='scale(0.95)';setTimeout(()=>card.style.transform='',180);}
+  saveV(v); updateProgress();
+}
+function updateProgress(){
+  const v=getV(); const n=Object.keys(v).length; const pct=Math.round(n/TOTAL*100);
+  const c=document.getElementById('ch-count');if(c)c.textContent=n;
+  const b=document.getElementById('ch-bar');if(b)b.style.width=pct+'%';
+  const ring=document.getElementById('prog-circle');
+  if(ring){const circ=94.2;ring.style.strokeDashoffset=circ-(circ*pct/100);}
+  const pl=document.getElementById('prog-pct');if(pl)pl.textContent=pct+'%';
+  const dot=document.getElementById('dot-checkin');if(dot)dot.classList.toggle('show',n>0);
+}
+function restoreV(){const v=getV();Object.keys(v).forEach(id=>{const c=document.getElementById(id);if(c)c.classList.add('visited');});updateProgress();}
+restoreV();
+
+// ---- CHECKLIST ----
+function toggleCheck(el,id){
+  el.classList.toggle('done');
+  try{let s=JSON.parse(localStorage.getItem('jpkr_cl')||'{}');s[id]=el.classList.contains('done');localStorage.setItem('jpkr_cl',JSON.stringify(s));}catch(e){}
+}
+function restoreCL(){
+  try{const s=JSON.parse(localStorage.getItem('jpkr_cl')||'{}');
+  Object.keys(s).forEach(id=>{if(s[id]){const box=document.getElementById(id);if(box){const item=box.closest('.cl-item');if(item)item.classList.add('done');}}})}catch(e){}
+}
+restoreCL();
+
+// ---- CONVERTER ----
+const RATES={jpy:37,krw:330,eur:0.233};
+function convert(from){
+  const val=parseFloat(document.getElementById('conv-pln').value)||0;
+  document.getElementById('cr-jpy').textContent=val?Math.round(val*RATES.jpy).toLocaleString()+' ¥':'—';
+  document.getElementById('cr-krw').textContent=val?Math.round(val*RATES.krw).toLocaleString()+' ₩':'—';
+  document.getElementById('cr-eur').textContent=val?(val*RATES.eur).toFixed(2)+' €':'—';
+}
+
+// ---- SPLIT BILL ----
+const CUR_SYMBOLS={jpy:'¥',krw:'₩',pln:'zł'};
+const TO_PLN={jpy:1/37,krw:1/330,pln:1};
+function calcSplit(){
+  const amt=parseFloat(document.getElementById('split-amount').value)||0;
+  const cur=document.getElementById('split-cur').value;
+  const n=parseInt(document.getElementById('split-persons').value)||6;
+  const perPerson=amt/n;
+  const sym=CUR_SYMBOLS[cur];
+  document.getElementById('split-result').textContent=perPerson?sym+' '+Math.ceil(perPerson).toLocaleString():'—';
+  const inPLN=(perPerson*TO_PLN[cur]);
+  document.getElementById('split-pln').textContent=perPerson?'≈ '+inPLN.toFixed(0)+' PLN / osoba':'Wpisz kwotę aby obliczyć';
+}
+
+// ---- TTS ----
+function speak(text,lang){
+  if(!('speechSynthesis' in window)){alert('Twoja przeglądarka nie obsługuje wymowy');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=lang; u.rate=0.85; u.pitch=1;
+  const voices=window.speechSynthesis.getVoices();
+  const v=voices.find(x=>x.lang.startsWith(lang.split('-')[0]));
+  if(v)u.voice=v;
+  window.speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window)window.speechSynthesis.getVoices();
+// ---- DARK MODE ----
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark-theme');
+  localStorage.setItem('jpkr_theme', isDark ? 'dark' : 'light');
+  document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
+}
+
+if(localStorage.getItem('jpkr_theme') === 'dark') {
+  document.body.classList.add('dark-theme');
+  document.getElementById('theme-toggle').textContent = '☀️';
+}
+</script>
+</body>
+</html>
